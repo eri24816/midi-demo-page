@@ -1,0 +1,39 @@
+{
+  ".": {
+    "dirs": [
+      "Cherry-picked Generation from Scratch",
+      "Generate from Seed"
+    ],
+    "files": [
+      "list.json",
+      "settings.json"
+    ]
+  },
+  "Cherry-picked Generation from Scratch": {
+    "dirs": [],
+    "files": [
+      "0.mid"
+    ]
+  },
+  "Generate from Seed": {
+    "dirs": [
+      "Ground truth",
+      "Our model"
+    ],
+    "files": []
+  },
+  "Generate from Seed/Ground truth": {
+    "dirs": [],
+    "files": [
+      "00060000.mid",
+      "00061000.mid"
+    ]
+  },
+  "Generate from Seed/Our model": {
+    "dirs": [],
+    "files": [
+      "00060000.mid",
+      "00061000.mid"
+    ]
+  }
+}
