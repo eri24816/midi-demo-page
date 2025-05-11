@@ -1,16 +1,16 @@
 {
     "title": "Midi Demo Page",
     "description": "A template for a demo page for a music generation model.",
-    "sections": {
-        "Cherry-picked Generation from Scratch":
+    "sections": [
         {
+            "name": "Cherry-picked Generation from Scratch",
             "order": 1,
             "description": "It's my favorite -- extended by AI from [this song](https://open.spotify.com/album/0xOJA8yHe2tTQoeNDXNa6c?si=tlFI38cuR5S4z9_bT5QwqQ)."
         },
-        "Generate from Seed":
         {
+            "name": "Generate from Seed",
             "order": 2,
-            "description": "Generate a new piece of music based on a seed phrase extracted from the ground truth.\n This is the second line."
+            "description": "Generate a new piece of music based on the ground truth.\n This is the second line."
         }
-    }
+    ]
 }
