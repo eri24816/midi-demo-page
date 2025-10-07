@@ -2,7 +2,8 @@
 
 Plays and visualizes midi files on github pages. Only single-instrument midi files are supported.
 
-![Image](https://i.imgur.com/lvk5DM3.png)
+<img width="1905" height="941" alt="image" src="https://github.com/user-attachments/assets/250da5eb-84f4-4909-94fc-ca570c3e5d8f" />
+
 
 ## Usage
 
