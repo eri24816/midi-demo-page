@@ -1,38 +1,39 @@
 {
   ".": {
     "dirs": [
-      "Cherry-picked Generation from Scratch",
-      "Generate from Seed"
+      "This is a basic section",
+      "This is a grouped section"
     ],
     "files": [
       "settings.json"
     ]
   },
-  "Cherry-picked Generation from Scratch": {
+  "This is a basic section": {
     "dirs": [],
     "files": [
-      "0.mid"
+      "midi_file_1.mid",
+      "midi_file_2.mid"
     ]
   },
-  "Generate from Seed": {
+  "This is a grouped section": {
     "dirs": [
-      "Ground truth",
-      "Our model"
+      "Generation",
+      "Seed"
     ],
     "files": []
   },
-  "Generate from Seed/Ground truth": {
+  "This is a grouped section/Generation": {
     "dirs": [],
     "files": [
-      "00060000.mid",
-      "00061000.mid"
+      "CbpNX-Pfy3E_ABCDE.mid",
+      "OuUyZEcOz34_ABCACAD.mid"
     ]
   },
-  "Generate from Seed/Our model": {
+  "This is a grouped section/Seed": {
     "dirs": [],
     "files": [
-      "00060000.mid",
-      "00061000.mid"
+      "CbpNX-Pfy3E_ABCDE.mid",
+      "OuUyZEcOz34_ABCACAD.mid"
     ]
   }
 }
