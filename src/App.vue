@@ -55,7 +55,8 @@ import { player } from './player'
 const tabSwitchers = ref<Record<string, any>>({})
 const editors = ref<Record<string, InstanceType<typeof PianorollEditor> | InstanceType<typeof EditorGroup>>>({})
 const selectedItems = ref<Record<string, string>>({})
-let allowFragmentUpdate = false
+let allowNextFragmentUpdate = false
+let ignoreNextHashChange = false
 
 const dictRefCallback = <T>(el: T | null, dict: Record<string, any>, key: string) => {
     console.log('dictRefCallback', el, dict, key)
@@ -77,7 +78,11 @@ const sections = ref<(Section | GroupedSection)[]>([])
 // Add function to update URL fragment
 function updateUrlFragment(section: string, item: string, groupName?: string) {
     console.log('updateUrlFragment', section, item, groupName)
-    if (!allowFragmentUpdate) return
+    if (!allowNextFragmentUpdate) {
+        allowNextFragmentUpdate = true
+        return
+    }
+    ignoreNextHashChange = true
     const params = new URLSearchParams()
     params.set('section', section)
     params.set('item', item)
@@ -91,9 +96,9 @@ function handleFileSelect(itemName: string, sectionName: string, groupName?: str
     console.log('handleFileSelect', itemName, sectionName, groupName)
     let path: string
     if (groupName) {
-        path = `resource/${sectionName}/${groupName}/${itemName}`
+        path = `resource/${sectionName}/${groupName}/${itemName}.mid`
     } else {
-        path = `resource/${sectionName}/${itemName}`
+        path = `resource/${sectionName}/${itemName}.mid`
     }
     (editors.value[sectionName] as InstanceType<typeof PianorollEditor>).loadMidiFile(path)
     selectedItems.value[sectionName] = itemName
@@ -104,17 +109,25 @@ function handleFileSwitcherClick(sectionName: string, itemName: string, groupNam
 }
 
 async function handleGroupFileSelect(itemName: string, section: GroupedSection) {
+    console.log('handleGroupFileSelect', itemName, section)
     const groupIndex = sections.value.indexOf(section)
     if (groupIndex === -1) return
     
     const editorGroup = editors.value[section.sectionName]
     if (!editorGroup) return
 
-    for (const memberName of section.groupMembers) {
-        const path = `resource/${section.sectionName}/${memberName}/${itemName}`
-        await editorGroup.loadMidiFile(memberName, path)
-    }
     selectedItems.value[section.sectionName] = itemName
+
+    // for (const memberName of section.groupMembers) {
+    //     const path = `resource/${section.sectionName}/${memberName}/${itemName}.mid`
+    //     await editorGroup.loadMidiFile(memberName, path)
+    // }
+
+    // concurrently load the midi files
+    await Promise.all(section.groupMembers.map(async (memberName) => {
+        const path = `resource/${section.sectionName}/${memberName}/${itemName}.mid`
+        await editorGroup.loadMidiFile(memberName, path)
+    }))
 }
 
 let listJson: Record<string, { dirs: string[], files: string[] }> | null = null
@@ -124,8 +137,9 @@ async function ls(path: string) {
 }
 
 function itemNameTrim(name: string) {
-    // replaces some_text_0063000.mid with 0063000
-    return name.replace(/^.*_(\d+)\.mid$/, '$1')
+    // replaces some_text_0063000.mid with some_text_0063000
+    console.log('itemNameTrim', name, name.replace(/\.mid$/, ''))
+    return name.replace(/\.mid$/, '')
 }
 
 // Add settings type
@@ -211,9 +225,9 @@ onMounted(async () => {
             if (sectionNameFromUrl && itemNameFromUrl && sectionNameFromUrl == sectionName) {
                 selectedItems.value[sectionName] = itemNameFromUrl
             } else {
-                selectedItems.value[sectionName] = lsResult.files[0]
+                selectedItems.value[sectionName] = itemNameTrim(lsResult.files[0])
             }
-            sections.value.push({ sectionName, items: lsResult.files })
+            sections.value.push({ sectionName, items: lsResult.files.map(itemNameTrim) })
         }
     }
 
@@ -221,6 +235,11 @@ onMounted(async () => {
     if (sectionNameFromUrl && itemNameFromUrl) {
         //scroll to the section
         nextTick(() => {
+            if (store.bps) {
+                for (const editor of Object.values(editors.value)) {
+                    editor.setBps(store.bps)
+                }
+            }
             const sectionElement = document.getElementById(sectionNameFromUrl)
             if (sectionElement) {
                 sectionElement.scrollIntoView({ behavior: 'smooth' })
@@ -230,8 +249,13 @@ onMounted(async () => {
             if (editor) {
                 editor.focus()
             }
-            allowFragmentUpdate = true
+            allowNextFragmentUpdate = true
             window.addEventListener("hashchange", () => {
+                if (ignoreNextHashChange) {
+                    ignoreNextHashChange = false
+                    return
+                }
+                allowNextFragmentUpdate = false
                 console.log('hashchange', window.location.hash)
                 const urlParams = new URLSearchParams(window.location.hash.slice(1))
                 const sectionNameFromUrl = urlParams.get('section')
@@ -250,8 +274,9 @@ onMounted(async () => {
             })
         })
     } else {
-        allowFragmentUpdate = true
+        allowNextFragmentUpdate = true
     }
+
 });
 
 function nextTick(fn: () => void) {

@@ -29,6 +29,15 @@ async function scanDirectory(dirPath) {
             await scanDirectory(fullPath);
         }
     }
+
+    // sort file by if file name starts with digits
+    myList[normalizedPath].files.sort((a, b) => {
+        const aMatch = a.match(/^\d+/);
+        const bMatch = b.match(/^\d+/);
+        if (aMatch && bMatch) {
+            return parseInt(aMatch[0]) - parseInt(bMatch[0]);
+        }
+    });
 }
 
 // Main execution

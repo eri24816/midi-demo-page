@@ -13,7 +13,7 @@ resource/
 
     settings.json
 
-    simple_section_1/
+    basic_section_1/
         1.mid
         2.mid
         ...
@@ -44,5 +44,11 @@ resource/
 
 ```bash
 npm install
-npm build
+npm run build
+```
+## Develop locally
+
+```bash
+npm install
+npm run dev
 ```

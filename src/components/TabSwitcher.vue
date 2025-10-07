@@ -42,8 +42,15 @@ const emit = defineEmits<{
 const sortAscending = ref(true);
 const selectedFile = ref(props.selectedFile);
 
-const sortedFiles = computed(() => {
-    const sorted = [...props.files].sort();
+const sortedFiles = computed(() => {    
+    const sorted = [...props.files].sort((a, b) => {
+        const aMatch = a.match(/^\d+/);
+        const bMatch = b.match(/^\d+/);
+        if (aMatch && bMatch) {
+            return parseInt(aMatch[0]) - parseInt(bMatch[0]);
+        }
+        return a.localeCompare(b);
+    });
     return sortAscending.value ? sorted : sorted.reverse();
 });
 
@@ -52,6 +59,7 @@ const toggleSortDirection = () => {
 };
 
 const selectFile = (file: string) => {
+    console.log('selectFile', file)
     selectedFile.value = file;
     emit('select', file);
     emit('click', file);
@@ -83,7 +91,6 @@ defineExpose({
 .tab-switcher {
     display: flex;
     gap: 16px;
-    max-height: 700px;
 }
 
 .file-list {
@@ -97,6 +104,7 @@ defineExpose({
     min-width: 100px;
     margin-right: 16px;
     overflow-y: auto;
+    max-height: 700px;
 }
 
 .file-btn {
